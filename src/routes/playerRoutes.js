@@ -22,7 +22,8 @@ router.get('/dcPlayers', playersController.getDcPlayers);
 router.get('/gkPlayers', playersController.getGkPlayers);
 
 // Player detail and search routes
-router.get('/playersDetail/:fbrefId', playersController.getPlayerDetail);
+router.get('/player/:name', playersController.getPlayerByName);
+router.get('/search', playersController.generalSearch);
 router.get('/search-player', playersController.searchPlayersByName);
 router.get('/formPlayers', playersController.getFormPlayers);
 router.get('/player-image/:playerId', playersController.getPlayerImage);

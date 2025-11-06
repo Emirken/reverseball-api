@@ -3,7 +3,8 @@ const {
     calculateAge,
     sortPlayersByPerformance,
     addSequentialIds,
-    formatPlayerData
+    formatPlayerData,
+    formatMarketValue
 } = require('../utils/helpers');
 
 class PlayerService {
@@ -920,17 +921,29 @@ class PlayerService {
 
 
     /**
-     * Get player details by ID
+     * Get player by name with all fields except _id, season, sofascore_id, scraped_at
      */
-    async getPlayerDetail(fbrefId) {
+    async getPlayerByName(name) {
         const collection = this.getCollection();
-        const player = await collection.findOne({ fbref_id: fbrefId });
+        const player = await collection.findOne(
+            { name: name },
+            { projection: { _id: 0, season: 0, sofascore_id: 0, scraped_at: 0 } }
+        );
 
         if (!player) {
             return null;
         }
 
-        return formatPlayerData(player);
+        // Format market_value and positions
+        if (player.market_value !== undefined) {
+            player.market_value = formatMarketValue(player.market_value);
+        }
+
+        if (Array.isArray(player.positions)) {
+            player.positions = player.positions.join(',');
+        }
+
+        return player;
     }
 
     /**

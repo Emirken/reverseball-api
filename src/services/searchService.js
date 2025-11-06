@@ -1,5 +1,6 @@
 const esClient = require('../config/elasticsearch');
-const { createPlayerSearchQuery, createMetricFilterQuery } = require('../utils/helpers');
+const database = require('../config/database');
+const { createPlayerSearchQuery, createMetricFilterQuery, formatMarketValue } = require('../utils/helpers');
 
 class SearchService {
     constructor() {
@@ -242,6 +243,41 @@ class SearchService {
             }));
         } catch (error) {
             console.error('Error in multi-field search:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * General search - searches by player name or club name
+     */
+    async generalSearch(query, limit = 20) {
+        try {
+            const collection = database.getCollection();
+
+            // Search in MongoDB for name or club matching the query
+            const players = await collection.find({
+                $or: [
+                    { name: { $regex: query, $options: 'i' } },
+                    { club: { $regex: query, $options: 'i' } }
+                ]
+            }, {
+                projection: { _id: 0, season: 0, sofascore_id: 0, scraped_at: 0 }
+            })
+            .limit(limit)
+            .toArray();
+
+            // Format market_value and positions for each player
+            return players.map(player => {
+                if (player.market_value !== undefined) {
+                    player.market_value = formatMarketValue(player.market_value);
+                }
+                if (Array.isArray(player.positions)) {
+                    player.positions = player.positions.join(',');
+                }
+                return player;
+            });
+        } catch (error) {
+            console.error('Error in general search:', error);
             throw error;
         }
     }

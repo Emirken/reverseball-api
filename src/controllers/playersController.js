@@ -290,20 +290,20 @@ class PlayersController {
     }
 
     /**
-     * GET /api/v1/reverseball/playersDetail/:fbrefId - Get player details
+     * GET /api/v1/reverseball/player/:name - Get player by name with full details
      */
-    async getPlayerDetail(req, res, next) {
+    async getPlayerByName(req, res, next) {
         try {
-            const { fbrefId } = req.params;
+            const { name } = req.params;
 
-            if (!fbrefId) {
+            if (!name) {
                 return res.status(400).json({
                     success: false,
-                    error: 'Player ID not specified'
+                    error: 'Player name not specified'
                 });
             }
 
-            const player = await playerService.getPlayerDetail(fbrefId);
+            const player = await playerService.getPlayerByName(decodeURIComponent(name));
 
             if (!player) {
                 return res.status(404).json({
@@ -315,6 +315,35 @@ class PlayersController {
             res.json({
                 success: true,
                 data: player
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * GET /api/v1/reverseball/search - General search by player name or club
+     */
+    async generalSearch(req, res, next) {
+        try {
+            const { query, limit } = req.query;
+
+            if (!query) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Query parameter is required'
+                });
+            }
+
+            const players = await searchService.generalSearch(
+                query,
+                parseInt(limit) || 20
+            );
+
+            res.json({
+                success: true,
+                count: players.length,
+                data: players
             });
         } catch (error) {
             next(error);
