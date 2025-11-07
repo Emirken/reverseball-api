@@ -581,11 +581,12 @@ class PlayerService {
             const totalMetricValue = possessionWonAttThird + tackles + keyPasses + ballRecovery + successfulDribbles;
 
             if (
-                possessionWonAttThird !== 0 &&
-                successfulDribbles !== 0 &&
-                keyPasses !== 0 &&
+                possessionWonAttThird >= 0.25 &&
+                successfulDribbles >= 0.15 &&
+                keyPasses >= 0.5 &&
                 tackles >= 1 &&
-                totalDuelsWonPercentage >= 40 &&
+                ballRecovery >= 3.0 &&
+                totalDuelsWonPercentage >= 45 &&
                 totalMetricValue >= 6.5 &&
                 minutesPerMatch >= 25
             ) {
