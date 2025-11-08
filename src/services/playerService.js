@@ -46,6 +46,7 @@ class PlayerService {
             const stats = player.stats || {};
 
             // Required metrics from stats_per90
+            const appearances = stats.appearances || 0;
             const goalsAssistsSum = stats.goalsAssistsSum || 0;
             const expectedGoals = stats.expectedGoals || 0;
             const totalShots = stats.totalShots || 0;
@@ -59,6 +60,7 @@ class PlayerService {
                 + this.per90(totalShots,minutesPlayed);
 
             if (
+                appearances >=3 &&
                 goalConversionPercentage >=18.4&&
                 totalMetricValue >= 5 &&
                 minutesPerMatch >= 25
@@ -95,6 +97,7 @@ class PlayerService {
             const stats = player.stats || {};
 
             // Required metrics from stats_per90
+            const appearances = stats.appearances || 0;
             const assists = stats.assists || 0;
             const expectedAssists = stats.expectedAssists || 0;
             const bigChancesCreated = stats.bigChancesCreated || 0;
@@ -110,6 +113,7 @@ class PlayerService {
                 + this.per90(bigChancesCreated,minutesPlayed)+ this.per90(keyPasses,minutesPlayed);
 
             if (
+                appearances >= 3 &&
                 totalMetricValue >= 1.5 &&
                 this.per90(accurateFinalThirdPasses,minutesPlayed) >= 8 &&
                 minutesPerMatch >= 25
@@ -162,6 +166,7 @@ class PlayerService {
             const totalMetricValue = goalsAssistsSum + keyPasses + expectedAssists + passToAssist;
 
             if (
+                stats.appearances >=3 &&
                 totalMetricValue >= 2 &&
                 keyPasses >= 1 &&
                 minutesPerMatch >= 25
@@ -214,6 +219,7 @@ class PlayerService {
             const totalMetricValue = goalsAssistsSum + keyPasses + expectedAssists + passToAssist;
 
             if (
+                stats.appearances >=3 &&
                 totalMetricValue >= 2 &&
                 keyPasses >= 1 &&
                 minutesPerMatch >= 25
@@ -266,6 +272,7 @@ class PlayerService {
             const totalMetricValue = assists + totalCross + tackles + keyPasses;
 
             if (
+                stats.appearances >=3 &&
                 accurateFinalThirdPasses >= 6 &&
                 totalCross >= 2 &&
                 tackles >= 0.9 &&
@@ -320,6 +327,7 @@ class PlayerService {
             const totalMetricValue = assists + totalCross + tackles + keyPasses;
 
             if (
+                stats.appearances >=3 &&
                 accurateFinalThirdPasses >= 6 &&
                 totalCross >= 2 &&
                 tackles >= 0.9 &&
@@ -373,6 +381,7 @@ class PlayerService {
             const totalMetricValue = ballRecovery + tackles + interceptions;
 
             if (
+                stats.appearances >=3 &&
                 totalDuelsWonPercentage >= 40  &&
                 ballRecovery >= 4.5 &&
                 totalMetricValue >= 7.5 &&
@@ -425,6 +434,7 @@ class PlayerService {
             const totalMetricValue = keyPasses + accurateFinalThirdPasses + interceptions;
 
             if (
+                stats.appearances >=3 &&
                 accurateLongBalls >= 3 &&
                 totalMetricValue >= 13 &&
                 minutesPerMatch >= 25
@@ -477,6 +487,7 @@ class PlayerService {
             const totalMetricValue = bigChancesCreated + goalsAssistsSum + keyPasses + possessionWonAttThird;
 
             if (
+                stats.appearances >=3 &&
                 successfulDribblesPercentage >= 50 &&
                 accurateFinalThirdPasses >= 7 &&
                 totalMetricValue >= 3 &&
@@ -529,6 +540,7 @@ class PlayerService {
             const totalMetricValue = accurateFinalThirdPasses + tackles + keyPasses + ballRecovery;
 
             if (
+                stats.appearances >=3 &&
                 accuratePassesPercentage >= 84.5 &&
                 totalMetricValue >= 17 &&
                 minutesPerMatch >= 25
@@ -581,6 +593,7 @@ class PlayerService {
             const totalMetricValue = possessionWonAttThird + tackles + keyPasses + ballRecovery + successfulDribbles;
 
             if (
+                stats.appearances >=3 &&
                 possessionWonAttThird >= 0.25 &&
                 successfulDribbles >= 0.15 &&
                 keyPasses >= 0.5 &&
@@ -637,6 +650,7 @@ class PlayerService {
             const totalMetricValue = totalCross + tackles + keyPasses + accurateFinalThirdPasses + assists;
 
             if (
+                stats.appearances >=3 &&
                 totalCross >= 2 &&
                 totalMetricValue >= 13 &&
                 minutesPerMatch >= 25
@@ -688,6 +702,7 @@ class PlayerService {
             const totalMetricValue = totalCross + tackles + keyPasses + accurateFinalThirdPasses + assists;
 
             if (
+                stats.appearances >=3 &&
                 totalCross >= 2 &&
                 totalMetricValue >= 13 &&
                 minutesPerMatch >= 25
@@ -740,6 +755,7 @@ class PlayerService {
             const totalMetricValue = ballRecovery + tackles + interceptions + clearances;
 
             if (
+                stats.appearances >=3 &&
                 totalDuelsWonPercentage >= 48  &&
                 ballRecovery >= 3.5  &&
                 totalMetricValue >= 9 &&
@@ -792,6 +808,7 @@ class PlayerService {
             const totalMetricValue = ballRecovery + tackles + interceptions + clearances;
 
             if (
+                stats.appearances >=3 &&
                 totalDuelsWonPercentage >= 48  &&
                 ballRecovery >= 3.5  &&
                 totalMetricValue >= 9 &&
@@ -846,6 +863,7 @@ class PlayerService {
             const totalMetricValue = ballRecovery + tackles + interceptions + clearances;
 
             if (
+                stats.appearances >=3 &&
                 aerialDuelsWonPercentage >= 48  &&
                 errorLeadToGoal <= 0.15  &&
                 totalMetricValue >= 11 &&
@@ -897,6 +915,7 @@ class PlayerService {
             const totalMetricValue = (saves/(saves + goalsConceded)) * 100;
 
             if (
+                stats.appearances >=3 &&
                 goalsPrevented >= 0  &&
                 totalMetricValue >= 70 &&
                 minutesPerMatch >= 25
