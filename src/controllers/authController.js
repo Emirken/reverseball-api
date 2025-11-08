@@ -69,14 +69,6 @@ class AuthController {
                 });
             }
 
-            // If club scout, require club details
-            if (scoutType === 'club' && (!leagueCountry || !clubName)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Club scouts must provide leagueCountry and clubName'
-                });
-            }
-
             const result = await authService.register({
                 name,
                 email,

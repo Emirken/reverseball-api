@@ -43,10 +43,12 @@ class AuthService {
                 updatedAt: new Date()
             };
 
-            // Add club-specific fields if scoutType is club
-            if (userData.scoutType === 'club') {
-                newUser.leagueCountry = userData.leagueCountry || null;
-                newUser.clubName = userData.clubName || null;
+            // Add optional fields if provided
+            if (userData.leagueCountry !== undefined) {
+                newUser.leagueCountry = userData.leagueCountry;
+            }
+            if (userData.clubName !== undefined) {
+                newUser.clubName = userData.clubName;
             }
 
             // Insert user into database
