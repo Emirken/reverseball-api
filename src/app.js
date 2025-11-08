@@ -5,6 +5,7 @@ const corsMiddleware = require('./middleware/cors');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const playerRoutes = require('./routes/playerRoutes');
 const authRoutes = require('./routes/authRoutes');
+const followListRoutes = require('./routes/followListRoutes');
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/reverseball', playerRoutes);
+app.use('/api/v1/followlist', followListRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
