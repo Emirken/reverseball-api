@@ -88,7 +88,7 @@ const formatMarketValue = (marketValue) => {
 };
 
 /**
- * Format player data - Returns only basic fields
+ * Format player data - Returns only basic fields for client
  * @param {Object} player - Player object from MongoDB
  * @returns {Object} Formatted player
  */
@@ -99,13 +99,62 @@ const formatPlayerData = (player) => {
         club: player.club || null,
         footed: player.footed || null,
         height_cm: player.height_cm || null,
-        market_value: formatMarketValue(player.market_value),
+        market_value: formatMarketValue(player.market_value),  // Formatted for display
+        market_value_raw: player.market_value || 0,  // Raw number for calculations
         image: player.image || null,
         league: player.league || null,
         league_country: player.league_country || null,
         nationality: player.nationality || null,
         positions: Array.isArray(player.positions) ? player.positions.join(',') : null,
+    };
+};
 
+/**
+ * Format player data for ML Service - Includes all fields needed by Python
+ * @param {Object} player - Player object from MongoDB
+ * @returns {Object} Formatted player with all ML-required fields
+ */
+const formatPlayerDataForML = (player) => {
+    // Ensure positions is an array
+    let positions = player.positions;
+    if (typeof positions === 'string') {
+        positions = positions.split(',').map(p => p.trim());
+    } else if (!Array.isArray(positions)) {
+        positions = [];
+    }
+
+    // Ensure age is a number
+    const age = typeof player.age === 'number' ? player.age : parseInt(player.age) || 0;
+
+    // Get raw market_value (number)
+    // Try market_value_raw first (if coming from formatted), then market_value
+    let marketValue = player.market_value_raw || player.market_value || 0;
+
+    // If still a string (like "4.5M €"), parse it
+    if (typeof marketValue === 'string') {
+        // Remove all non-numeric except decimal point
+        const cleaned = marketValue.replace(/[^0-9.]/g, '');
+        marketValue = parseFloat(cleaned) || 0;
+
+        // If it was in "M" format like "4.5M", multiply by 1 million
+        if (marketValue > 0 && marketValue < 1000 && cleaned.includes('.')) {
+            marketValue = marketValue * 1000000;
+        }
+    }
+
+    return {
+        name: player.name || null,
+        age: age,  // NUMBER
+        club: player.club || null,
+        footed: player.footed || null,
+        height_cm: player.height_cm || null,
+        market_value: marketValue,  // CRITICAL: Python uses 'market_value' as NUMBER
+        league: player.league || null,
+        league_country: player.league_country || null,
+        nationality: player.nationality || null,
+        positions: positions,  // ARRAY
+        sofascore_id: player.sofascore_id ? String(player.sofascore_id) : null,
+        stats: player.stats || {}  // CRITICAL: Python needs stats for calculations
     };
 };
 
@@ -226,6 +275,7 @@ module.exports = {
     sortPlayersByPerformance,
     addSequentialIds,
     formatPlayerData,
+    formatPlayerDataForML,
     formatMarketValue,
     createPlayerSearchQuery,
     createMetricFilterQuery

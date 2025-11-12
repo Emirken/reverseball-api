@@ -1,4 +1,5 @@
 const database = require('../config/database');
+const mlService = require('./mlService');
 const {
     calculateAge,
     sortPlayersByPerformance,
@@ -42,6 +43,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -69,18 +71,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player); // MongoDB'den gelen orijinal veri
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -93,6 +100,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -122,18 +130,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -146,6 +159,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -168,25 +182,31 @@ class PlayerService {
             if (
                 stats.appearances >=3 &&
                 totalMetricValue >= 2 &&
-                keyPasses >= 1 &&
+                keyPasses >= 0.7 &&
                 minutesPerMatch >= 25
             ) {
                 players.push({
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
+
     }
 
     /**
@@ -199,6 +219,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -221,25 +242,30 @@ class PlayerService {
             if (
                 stats.appearances >=3 &&
                 totalMetricValue >= 2 &&
-                keyPasses >= 1 &&
+                keyPasses >= 0.7 &&
                 minutesPerMatch >= 25
             ) {
                 players.push({
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -252,6 +278,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -283,18 +310,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -307,6 +339,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -338,18 +371,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -362,6 +400,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -391,18 +430,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -415,6 +459,7 @@ class PlayerService {
         });
 
         const players = [];
+         const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -443,18 +488,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -467,6 +517,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -497,18 +548,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -521,6 +577,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -549,18 +606,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -573,6 +635,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -607,18 +670,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -631,6 +699,8 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
+
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -659,18 +729,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -683,6 +758,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -711,18 +787,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -735,6 +816,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -765,18 +847,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
     /**
      * Get Left Defend Backs (DC)
@@ -788,6 +875,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -818,18 +906,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -842,6 +935,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -873,18 +967,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
     /**
@@ -897,6 +996,7 @@ class PlayerService {
         });
 
         const players = [];
+        const originalPlayers = [];
         for await (const player of cursor) {
             const stats = player.stats || {};
 
@@ -924,18 +1024,23 @@ class PlayerService {
                     player: formatPlayerData(player),
                     totalMetricValue: totalMetricValue
                 });
+                originalPlayers.push(player);
             }
         }
 
         // Sort by total metric value (descending)
-        const sortedPlayers = players.sort((a, b) => {
-            return b.totalMetricValue - a.totalMetricValue;
-        });
+        const sortedData = players
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((a, b) => b.totalMetricValue - a.totalMetricValue);
 
-        // Remove totalMetricValue and return only player data
-        const finalPlayers = sortedPlayers.map(item => item.player);
+        // Extract sorted players and corresponding originals IN SAME ORDER
+        const finalPlayers = sortedData.map(item => item.player);
+        const sortedOriginalPlayers = sortedData.map(item => originalPlayers[item.originalIndex]);
 
-        return addSequentialIds(finalPlayers);
+        const playersWithIds = addSequentialIds(finalPlayers);
+
+        // ML insights ekle (AYNI SIRADA gönder!)
+        return await mlService.enrichPlayers(playersWithIds, sortedOriginalPlayers);
     }
 
 
