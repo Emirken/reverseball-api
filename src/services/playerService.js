@@ -1050,25 +1050,36 @@ class PlayerService {
      */
     async getPlayerByName(name) {
         const collection = this.getCollection();
-        const player = await collection.findOne(
-            { name: name },
-            { projection: { _id: 0, season: 0, sofascore_id: 0, scraped_at: 0 } }
+        const originalPlayer = await collection.findOne(
+            { name: name }
         );
 
-        if (!player) {
+        if (!originalPlayer) {
             return null;
         }
 
+        // Format player data for client
+        const formattedPlayer = {
+            ...originalPlayer,
+            _id: undefined,
+            season: undefined,
+            sofascore_id: undefined,
+            scraped_at: undefined
+        };
+
         // Format market_value and positions
-        if (player.market_value !== undefined) {
-            player.market_value = formatMarketValue(player.market_value);
+        if (formattedPlayer.market_value !== undefined) {
+            formattedPlayer.market_value = formatMarketValue(formattedPlayer.market_value);
         }
 
-        if (Array.isArray(player.positions)) {
-            player.positions = player.positions.join(',');
+        if (Array.isArray(formattedPlayer.positions)) {
+            formattedPlayer.positions = formattedPlayer.positions.join(',');
         }
 
-        return player;
+        // Add ML insights
+        const enrichedPlayer = await mlService.addMLInsights(formattedPlayer, originalPlayer);
+
+        return enrichedPlayer;
     }
 
     /**

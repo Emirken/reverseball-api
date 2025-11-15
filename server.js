@@ -2,6 +2,7 @@ require('dotenv').config();
 const app = require('./src/app');
 const database = require('./src/config/database');
 const esClient = require('./src/config/elasticsearch');
+const mlService = require('./src/services/mlService');
 
 const PORT = process.env.PORT || 3000;
 
@@ -49,6 +50,10 @@ const startServer = async () => {
             console.warn('⚠️  Elasticsearch connection failed. Search features may be limited.');
             console.warn('Error:', esError.message);
         }
+
+        // Initialize ML Service
+        console.log('🔄 Checking ML Service...');
+        await mlService.checkHealth();
 
         // Start Express server
         server = app.listen(PORT, () => {

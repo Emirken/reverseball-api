@@ -149,12 +149,8 @@ class MLService {
                 };
             });
 
-            // Future potential'e göre sırala (mlInsights olanlar önce)
-            enrichedPlayers.sort((a, b) => {
-                const potA = a.mlInsights?.futurePotential || 0;
-                const potB = b.mlInsights?.futurePotential || 0;
-                return potB - potA;
-            });
+            // Sıralama playerService'de zaten totalMetricValue'ye göre yapıldı
+            // Burada tekrar sıralamaya gerek yok, gelen sırayı koruyoruz
 
             const successCount = enrichedPlayers.filter(p => p.mlInsights).length;
             console.log(`✓ ML insights added to ${successCount}/${enrichedPlayers.length} players`);
