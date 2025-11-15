@@ -47,8 +47,12 @@ const startServer = async () => {
             await esClient.checkConnection();
             await esClient.createIndex();
         } catch (esError) {
-            console.warn('⚠️  Elasticsearch connection failed. Search features may be limited.');
-            console.warn('Error:', esError.message);
+            console.warn('\n⚠️  Elasticsearch is not available. Search features will be limited.');
+            console.warn('💡 To enable search features, start Elasticsearch on http://localhost:9200');
+            // Don't log the full error in development to reduce noise
+            if (process.env.NODE_ENV === 'production') {
+                console.warn('Error details:', esError.message);
+            }
         }
 
         // Initialize ML Service

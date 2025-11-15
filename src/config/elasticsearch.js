@@ -32,10 +32,10 @@ class ElasticsearchClient {
     async checkConnection() {
         try {
             const health = await this.client.cluster.health();
-            console.log('📊 Elasticsearch cluster status:', health.status);
+            console.log('✅ Elasticsearch cluster status:', health.status);
             return health;
         } catch (error) {
-            console.error('❌ Elasticsearch health check failed:', error);
+            // Don't log the error here, let the caller handle it
             throw error;
         }
     }
